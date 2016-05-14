@@ -1,8 +1,9 @@
 module Field exposing (..)
-
+import Html.App
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import TextField
 
 -- MODEL
 type FieldType
@@ -14,17 +15,13 @@ type FieldType
 
 type alias Model =
   { type': FieldType
-  , label: String
-  , id: String
-  , value: String
+  , field: TextField.Model
   }
 
 init : Int -> Model
 init index =
   { type' = Text
-  , label = "Text" ++ toString index
-  , id = "text" ++ toString index
-  , value = ""
+  , field = TextField.init index
   }
 
 
@@ -32,23 +29,23 @@ init index =
 type Dispatch = Remove
 
 type Msg
-  = UpdateValue String
-  | RemoveSelf
+  = RemoveSelf
+  | Modify TextField.Msg
 
 update : Msg -> Model -> (Model, Maybe Dispatch)
 update msg model =
   case msg of
-    UpdateValue newValue ->
-      ( { model | value = newValue }, Nothing)
     RemoveSelf ->
       (model, Just Remove)
+
+    Modify msg ->
+      ({ model | field = TextField.update msg model.field }, Nothing)
 
 
 -- VIEW
 view : Model -> Html Msg
 view model =
   div []
-    [ label [ for model.id ] [ text model.label ]
-    , input [ id model.id, onInput UpdateValue, value model.value ] []
+    [ TextField.view model.field |> Html.App.map Modify
     , button [ onClick RemoveSelf ] [ text "X" ]
     ]

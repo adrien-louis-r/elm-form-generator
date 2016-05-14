@@ -2,8 +2,7 @@ import Html.App as Html
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Field exposing ( FieldType(..), Model, view, Msg(..))
-import Debug exposing (log)
+import Field exposing (..)
 
 main =
   Html.program

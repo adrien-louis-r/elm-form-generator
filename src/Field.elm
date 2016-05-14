@@ -16,6 +16,7 @@ type alias Model =
   { type': FieldType
   , label: String
   , id: String
+  , value: String
   }
 
 init : Int -> Model
@@ -23,6 +24,7 @@ init index =
   { type' = Text
   , label = "Text" ++ toString index
   , id = "text" ++ toString index
+  , value = ""
   }
 
 
@@ -30,14 +32,14 @@ init index =
 type Dispatch = Remove
 
 type Msg
-  = NoOp
+  = UpdateValue String
   | RemoveSelf
 
 update : Msg -> Model -> (Model, Maybe Dispatch)
 update msg model =
   case msg of
-    NoOp ->
-      (model, Nothing)
+    UpdateValue newValue ->
+      ( { model | value = newValue }, Nothing)
     RemoveSelf ->
       (model, Just Remove)
 
@@ -47,6 +49,6 @@ view : Model -> Html Msg
 view model =
   div []
     [ label [ for model.id ] [ text model.label ]
-    , input [ id model.id ] []
+    , input [ id model.id, onInput UpdateValue, value model.value ] []
     , button [ onClick RemoveSelf ] [ text "X" ]
     ]

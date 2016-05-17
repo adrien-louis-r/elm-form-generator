@@ -1,21 +1,23 @@
-module TextField exposing (..)
+module NumberField exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import String
+
 
 -- MODEL
 type alias Model =
   { label: String
   , id: String
-  , value: String
+  , value: Int
   }
 
 init : Int -> Model
 init index =
-  { label = "Text" ++ toString index
-  , id = "text" ++ toString index
-  , value = ""
+  { label = "Number" ++ toString index
+  , id = "number" ++ toString index
+  , value = 0
   }
 
 
@@ -27,7 +29,11 @@ update : Msg -> Model -> Model
 update msg model =
   case msg of
     UpdateValue newValue ->
-      { model | value = newValue }
+      case String.toInt newValue of
+        Ok int ->
+          { model | value = int }
+        Err _ ->
+          { model | value = 0 }
 
 
 -- VIEW
@@ -35,5 +41,5 @@ view : Model -> Html Msg
 view model =
   span []
     [ label [ for model.id ] [ text model.label ]
-    , input [ type' "text", id model.id, onInput UpdateValue, value model.value ] []
+    , input [ type' "number", id model.id, onInput UpdateValue, value "0" ] []
     ]

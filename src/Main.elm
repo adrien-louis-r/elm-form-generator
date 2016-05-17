@@ -24,7 +24,7 @@ init : (Model, Cmd Msg)
 init =
   ( { fields =
       [ ( 0
-        , Field.init 0
+        , Field.initText 0
         )
       ]
     , nextID = 1
@@ -35,15 +35,24 @@ init =
 
 -- UPDATE
 type Msg
-  = AddField
+  = AddTextField
+  | AddNumberField
   | RemoveField ID Field.Msg
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    AddField ->
+    AddTextField ->
       ( { model |
-          fields = ( model.nextID, Field.init model.nextID ) :: model.fields
+          fields = ( model.nextID, Field.initText model.nextID ) :: model.fields
+          , nextID = model.nextID + 1
+        }
+      , Cmd.none
+      )
+
+    AddNumberField ->
+      ( { model |
+          fields = ( model.nextID, Field.initNumber model.nextID ) :: model.fields
           , nextID = model.nextID + 1
         }
       , Cmd.none
@@ -71,10 +80,12 @@ subscriptions model =
 -- VIEW
 view : Model -> Html Msg
 view model =
-  let add = button [ onClick AddField ] [ text "Add" ]
+  let
+    addText = button [ onClick AddTextField ] [ text "Add text" ]
+    addNumber = button [ onClick AddNumberField ] [ text "Add number" ]
   in
     div []
-      (add :: List.map viewField (List.reverse model.fields))
+      (addText :: addNumber :: List.map viewField (List.reverse model.fields))
 
 viewField : (ID, Field.Model) -> Html Msg
 viewField (id, model) =

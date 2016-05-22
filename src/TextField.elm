@@ -11,10 +11,10 @@ type alias Model =
   , value: String
   }
 
-init : Int -> Model
-init index =
-  { label = "Text" ++ toString index
-  , id = "text" ++ toString index
+init : String -> String -> Model
+init label id =
+  { label = label
+  , id = id
   , value = ""
   }
 

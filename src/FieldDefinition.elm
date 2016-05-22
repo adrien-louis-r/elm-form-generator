@@ -13,32 +13,46 @@ type alias Model =
   , id: TextField.Model
   }
 
-init : Model
-init =
-  { label = TextField.init 0
-  , id = TextField.init 1
+init : Int -> Model
+init index =
+  { label =
+    { label = "Label: "
+    , id = "fieldlabel" ++ toString index
+    , value = ""
+    }
+  , id =
+    { label = "Id: "
+    , id = "fieldid0" ++ toString index
+    , value = ""
+    }
   }
 
 
 -- UPDATE
+type Dispatch = Remove
+
+
 type Msg
   = Modify String TextField.Msg
+  | RemoveSelf
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> (Model, Maybe Dispatch)
 update msg model =
   case msg of
     Modify key msg ->
       case key of
         "label" ->
-          { model | label = TextField.update msg model.label }
+          ({ model | label = TextField.update msg model.label }, Nothing)
 
         "id" ->
-          { model | label = TextField.update msg model.label }
+          ({ model | id = TextField.update msg model.id }, Nothing)
 
         _ ->
-          model
+          (model, Nothing)
 
+    RemoveSelf ->
+      (model, Just Remove)
 
 -- VIEW
 view : Model -> Html Msg
@@ -46,4 +60,5 @@ view model =
   div []
     [ Html.map (Modify "label") (TextField.view model.label)
     , Html.map (Modify "id") (TextField.view model.id)
+    , button [ onClick RemoveSelf ] [ text "X" ]
     ]

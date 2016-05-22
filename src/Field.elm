@@ -12,8 +12,8 @@ type Model
   = Text TextField.Model
   | Number NumberField.Model
 
-initText : Int -> Model
-initText index = Text (TextField.init index)
+initText : String -> String -> Model
+initText label id = Text (TextField.init label id)
 
 initNumber : Int -> Model
 initNumber index = Number (NumberField.init index)

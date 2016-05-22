@@ -17,7 +17,7 @@ type alias Model =
 
 init : Model
 init =
-  { fields = [(0, FieldDefinition.init 0)]
+  { fields = [(0, FieldDefinition.init FieldDefinition.Text 0)]
   , nextId = 1
   , result = []
   }
@@ -27,8 +27,8 @@ init =
 type Msg
   = Modify Int FieldDefinition.Msg
   | AddDefinition
+  | AddDefinitionNumber
   | GenerateForm
-
 
 update : Msg -> Model -> Model
 update msg model =
@@ -48,7 +48,13 @@ update msg model =
 
     AddDefinition ->
       { model |
-        fields = (model.nextId, FieldDefinition.init model.nextId) :: model.fields
+        fields = (model.nextId, FieldDefinition.init FieldDefinition.Text model.nextId) :: model.fields
+      , nextId = model.nextId + 1
+      }
+
+    AddDefinitionNumber ->
+      { model |
+        fields = (model.nextId, FieldDefinition.init FieldDefinition.Number model.nextId) :: model.fields
       , nextId = model.nextId + 1
       }
 
@@ -61,8 +67,13 @@ formDefinitionToform fields =
   let
     transform (fieldID, fieldDefinition) =
       case (fieldID, fieldDefinition) of
-        (_, fieldDefinition) ->
-          (fieldID, Field.initText fieldDefinition.label.value fieldDefinition.id.value)
+        (_, {label, id, type'}) ->
+          case type' of
+            FieldDefinition.Text ->
+              (fieldID, Field.initText label.value id.value)
+
+            FieldDefinition.Number ->
+              (fieldID, Field.initNumber label.value id.value)
   in
     List.map transform fields
 
@@ -72,10 +83,11 @@ view : Model -> Html Msg
 view model =
   let
     addDefinition = button [ onClick AddDefinition ] [ text "Add new Field" ]
+    addDefinitionNumber = button [ onClick AddDefinitionNumber ] [ text "Add new number Field" ]
     generateForm = button [ onClick GenerateForm ] [ text "Generate form" ]
   in
     div []
-      (generateForm :: addDefinition :: List.map fieldDefinitionView model.fields)
+      (generateForm :: addDefinition :: addDefinitionNumber :: List.map fieldDefinitionView model.fields)
 
 fieldDefinitionView: (Int, FieldDefinition.Model) -> Html Msg
 fieldDefinitionView (id, fieldDefinition) =

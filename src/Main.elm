@@ -6,6 +6,7 @@ import Task exposing (..)
 import Field exposing (..)
 import FormDefinition exposing (..)
 
+
 main =
   Html.program
     { init = init
@@ -33,15 +34,14 @@ init =
 
 -- UPDATE
 type Msg
-  = RemoveField ID Field.Msg
+  = UpdateField Field.Msg
   | UpdateDefinition FormDefinition.Msg
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    RemoveField id msg ->
-      ( model, Cmd.none )
-
+    UpdateField msg ->
+      ( model, Cmd.none)
     UpdateDefinition msg ->
       ( { model | formDefinition = FormDefinition.update msg model.formDefinition }, Cmd.none)
 
@@ -65,4 +65,4 @@ view model =
 
 viewField : (ID, Field.Model) -> Html Msg
 viewField (id, model) =
-  Html.map (RemoveField id) (Field.view model)
+  Html.map UpdateField (Field.view model)

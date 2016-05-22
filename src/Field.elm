@@ -15,31 +15,25 @@ type Model
 initText : String -> String -> Model
 initText label id = Text (TextField.init label id)
 
-initNumber : Int -> Model
-initNumber index = Number (NumberField.init index)
+initNumber : String -> String -> Model
+initNumber label id = Number (NumberField.init label id)
 
 -- UPDATE
-type Dispatch = Remove
-
 type Msg
-  = RemoveSelf
-  | ModifyText TextField.Msg
+  = ModifyText TextField.Msg
   | ModifyNumber NumberField.Msg
 
-update : Msg -> Model -> (Model, Maybe Dispatch)
+update : Msg -> Model -> Model
 update msg model =
   case (msg, model) of
-    (RemoveSelf, _) ->
-      (model, Just Remove)
-
     (ModifyText msg, Text fieldModel) ->
-      (Text (TextField.update msg fieldModel), Nothing)
+      Text (TextField.update msg fieldModel)
 
     (ModifyNumber msg, Number fieldModel) ->
-      (Number (NumberField.update msg fieldModel), Nothing)
+      Number (NumberField.update msg fieldModel)
 
     _ ->
-      (model, Nothing)
+      model
 
 -- VIEW
 view : Model -> Html Msg
@@ -47,12 +41,8 @@ view model =
   case model of
     Text fieldModel ->
       div []
-        [ TextField.view fieldModel |> Html.App.map ModifyText
-        , button [ onClick RemoveSelf ] [ text "X" ]
-        ]
+        [ TextField.view fieldModel |> Html.App.map ModifyText ]
 
     Number fieldModel ->
       div []
-        [ NumberField.view fieldModel |> Html.App.map ModifyNumber
-        , button [ onClick RemoveSelf ] [ text "X" ]
-        ]
+        [ NumberField.view fieldModel |> Html.App.map ModifyNumber ]

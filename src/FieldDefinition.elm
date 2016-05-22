@@ -8,13 +8,16 @@ import TextField
 
 
 -- MODEL
+type FieldType = Text | Number
+
 type alias Model =
   { label: TextField.Model
   , id: TextField.Model
+  , type': FieldType
   }
 
-init : Int -> Model
-init index =
+init : FieldType -> Int  -> Model
+init type' index =
   { label =
     { label = "Label: "
     , id = "fieldlabel" ++ toString index
@@ -25,6 +28,7 @@ init index =
     , id = "fieldid0" ++ toString index
     , value = ""
     }
+  , type' = type'
   }
 
 

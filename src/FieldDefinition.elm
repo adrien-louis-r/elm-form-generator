@@ -16,20 +16,23 @@ type alias Model =
   , type': FieldType
   }
 
-init : FieldType -> Int  -> Model
+init : FieldType -> Int -> Model
 init type' index =
-  { label =
-    { label = "Label: "
-    , id = "fieldlabel" ++ toString index
-    , value = ""
+  let
+    labelType = if type' == Text then "text" else "number"
+  in
+    { label =
+      { label = "Label: "
+      , id = "fieldlabel" ++ toString index
+      , value = labelType ++ toString index ++ ":"
+      }
+    , id =
+      { label = "Id: "
+      , id = "fieldid" ++ toString index
+      , value = "id" ++ toString index
+      }
+    , type' = type'
     }
-  , id =
-    { label = "Id: "
-    , id = "fieldid0" ++ toString index
-    , value = ""
-    }
-  , type' = type'
-  }
 
 
 -- UPDATE

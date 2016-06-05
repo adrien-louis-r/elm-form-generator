@@ -17,8 +17,8 @@ type alias Model =
 
 init : Model
 init =
-  { fields = [(0, FieldDefinition.init FieldDefinition.Text 0)]
-  , nextId = 1
+  { fields = []
+  , nextId = 0
   , result = []
   }
 
@@ -28,7 +28,7 @@ type Msg
   = Modify Int FieldDefinition.Msg
   | AddDefinition
   | AddDefinitionNumber
-  | GenerateForm
+
 
 update : Msg -> Model -> Model
 update msg model =
@@ -43,23 +43,30 @@ update msg model =
               Nothing
             (True, (newFieldModel, _)) ->
               Just (fieldID, newFieldModel)
+
+        newFields = List.filterMap updateField model.fields
       in
-        { model | fields = List.filterMap updateField model.fields }
+        { model | fields = newFields, result = formDefinitionToform newFields }
 
     AddDefinition ->
-      { model |
-        fields = (model.nextId, FieldDefinition.init FieldDefinition.Text model.nextId) :: model.fields
-      , nextId = model.nextId + 1
-      }
+      let
+        newFields = (model.nextId, FieldDefinition.init FieldDefinition.Text model.nextId) :: model.fields
+      in
+        { model |
+          fields = newFields
+        , nextId = model.nextId + 1
+        , result = formDefinitionToform newFields
+        }
 
     AddDefinitionNumber ->
-      { model |
-        fields = (model.nextId, FieldDefinition.init FieldDefinition.Number model.nextId) :: model.fields
-      , nextId = model.nextId + 1
-      }
-
-    GenerateForm ->
-      { model | result = formDefinitionToform model.fields }
+      let
+        newFields = (model.nextId, FieldDefinition.init FieldDefinition.Number model.nextId) :: model.fields
+      in
+        { model |
+          fields = newFields
+        , nextId = model.nextId + 1
+        , result = formDefinitionToform newFields
+        }
 
 
 formDefinitionToform : List (Int, FieldDefinition.Model) -> List (Int, Field.Model)
@@ -84,10 +91,9 @@ view model =
   let
     addDefinition = button [ onClick AddDefinition ] [ text "Add new Field" ]
     addDefinitionNumber = button [ onClick AddDefinitionNumber ] [ text "Add new number Field" ]
-    generateForm = button [ onClick GenerateForm ] [ text "Generate form" ]
   in
     div []
-      (generateForm :: addDefinition :: addDefinitionNumber :: List.map fieldDefinitionView model.fields)
+      (addDefinition :: addDefinitionNumber :: List.map fieldDefinitionView model.fields)
 
 fieldDefinitionView: (Int, FieldDefinition.Model) -> Html Msg
 fieldDefinitionView (id, fieldDefinition) =
